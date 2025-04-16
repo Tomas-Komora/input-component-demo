@@ -7,7 +7,8 @@ interface TextInputProps {
   label: string;
   optional?: string;
   placeholder?: string;
-  description?: String;
+  description?: string;
+  validate?: (value: string) => boolean; // Optional validation function
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -15,13 +16,23 @@ export const TextInput: React.FC<TextInputProps> = ({
   optional,
   placeholder = "",
   description,
+  validate,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [hasText, setHasText] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [isValid, setIsValid] = useState<boolean | null>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setHasText(event.target.value.length > 0);
+    const value = event.target.value;
+    setInputValue(value);
+    setHasText(value.length > 0);
+
+    if (validate) {
+      setIsValid(validate(value)); // Validate input
+    }
   };
+
   return (
     <div className="flex flex-col w-[400px] h-[78px] top-[115px] left-[25px] gap-dimension/xs pt-2 pr-1 pb-4 pl-4">
       <label className="flex items-center w-[400px] h-[22px] gap-dimension/xs">
@@ -47,13 +58,17 @@ export const TextInput: React.FC<TextInputProps> = ({
           border-dimension/stroke/l gap-dimension/xs pt-dimension/s pr-dimension/xs pb-dimension/s pl-dimension/m
           ${
             isFocused
-              ? "border-on-neutral-low text-on-neutral-xx-high"
+              ? isValid === false
+                ? "border-on-danger text-on-danger"
+                : "border-on-neutral-low text-on-neutral-xx-high"
               : "border-on-neutral-low"
           }
         `}
         style={{
           border: isFocused
-            ? "3px solid var(--color-state-default-focus, #1A1A1ACC)"
+            ? isValid === false
+              ? "3px solid var(--color-state-danger, #FF0000)"
+              : "3px solid var(--color-state-default-focus, #1A1A1ACC)"
             : undefined,
         }}
       >
@@ -81,18 +96,28 @@ export const TextInput: React.FC<TextInputProps> = ({
           className="flex items-center justify-center w-[32px] h-[32px] 
             min-w-dimension/3xl min-h-dimension/3xl gap-[8px]"
         >
-          {/* Spinner/Success */}
-          {hasText && (
+          {/* Validation Feedback */}
+          {hasText && validate && isValid !== null && (
             <div className="w-dimension/xl h-dimension/xl">
-              {/* Spinner Atom */}
-              <Spinner
-                Start="Brand"
-                Step="1"
-                width={24}
-                height={24}
-                className="w-[24px] h-[24px] text-state-loading-spinner-brand-0 animate-spin"
-              />
+              {isValid ? (
+                <div className="w-[24px] h-[24px] text-success">
+                  {/* Success Icon */}✓
+                </div>
+              ) : (
+                <div className="w-[24px] h-[24px] text-danger">
+                  {/* Error Icon */}✗
+                </div>
+              )}
             </div>
+          )}
+          {!validate && hasText && (
+            <Spinner
+              Start="Brand"
+              Step="1"
+              width={24}
+              height={24}
+              className="w-[24px] h-[24px] text-state-loading-spinner-brand-0 animate-spin"
+            />
           )}
         </div>
       </div>

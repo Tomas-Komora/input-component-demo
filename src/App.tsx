@@ -10,7 +10,7 @@ function App() {
             label="Input "
             placeholder="Placeholder je velmoi dlhy text ktorý sa nezmestí do inputu"
             optional="Optional"
-            //validate={(value) => value.length >= 5}
+            validate={(value) => value.length >= 5}
             //description="Popis inputu"
           />
         </div>

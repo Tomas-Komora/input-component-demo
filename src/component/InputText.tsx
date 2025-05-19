@@ -65,18 +65,20 @@ export const TextInput: React.FC<TextInputProps> = ({
           }
         `}
         style={{
-          border: isFocused
+          boxSizing: "border-box",
+          border: "1px solid var(--color-state-default, #CCCCCC)",
+          outline: isFocused
             ? isValid === false
               ? "3px solid var(--color-state-danger, #FF0000)"
               : "3px solid var(--color-state-default-focus, #1A1A1ACC)"
-            : undefined,
+            : "none",
         }}
       >
         {/* Value Section */}
         <div className="flex items-center w-[336px] h-[22px] gap-dimension/3xs">
           <input
             type="text"
-            placeholder={isFocused ? "" : placeholder}
+            placeholder={placeholder}
             className={`w-[336px] h-[22px] font-body-m outline-none caret-surface-brand ${
               hasText ? "text-on-neutral-xx-high" : "text-on-neutral-low"
             }`}
